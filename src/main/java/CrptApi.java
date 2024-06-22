@@ -76,7 +76,7 @@ public class CrptApi {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        // Set up WireMock server
+
         WireMockServer wireMockServer = new WireMockServer(WireMockConfiguration.wireMockConfig().port(8080));
         wireMockServer.start();
 
@@ -87,10 +87,8 @@ public class CrptApi {
                         .withHeader("Content-Type", "application/json")
                         .withBody("{\"status\":\"success\"}")));
 
-        // Instantiate CrptApi with 10 requests every 30 seconds
         CrptApi api = new CrptApi("http://localhost:8080/api/v3/lk/documents/create", TimeUnit.SECONDS, 15, 10);
 
-        // Create a sample document
         Document doc = new Document();
         doc.participantInn = "1234567890";
         doc.docId = "doc123";
@@ -115,10 +113,8 @@ public class CrptApi {
         doc.regDate = "2020-01-23";
         doc.regNumber = "string";
 
-        // Create an ExecutorService to manage concurrent requests
         ExecutorService executor = Executors.newFixedThreadPool(20);
 
-        // Simulate sending concurrent requests to test thread safety
         for (int i = 0; i < 20; i++) {
             final int requestNumber = i + 1;
             executor.submit(() -> {
@@ -131,11 +127,9 @@ public class CrptApi {
             });
         }
 
-        // Shutdown the executor and wait for termination
         executor.shutdown();
         executor.awaitTermination(1, TimeUnit.MINUTES);
 
-        // Shutdown the scheduler and WireMock server
         api.shutdown();
         wireMockServer.stop();
     }
